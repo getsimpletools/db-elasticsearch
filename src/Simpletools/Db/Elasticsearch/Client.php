@@ -5,12 +5,12 @@ namespace Simpletools\Db\Elasticsearch;
 class Client
 {
 		protected static $_gSettings            = array();
-		protected static $_pluginSettings            = array(); //['convertMapToJson' => true|false]
+		//protected static $_pluginSettings            = array(); //['convertMapToJson' => true|false]
 
 		protected static $_defaultCluster       = 'default';
     protected $___cluster	                = 'default';
 
-    protected $___keyspace;
+    protected $___accessPoint ='';
     protected $___connection;
 
 
@@ -21,21 +21,34 @@ class Client
         else
             $this->___cluster = self::$_defaultCluster;
 
-        if(isset(self::$_gSettings[$cluster]['keyspace']))
-        {
-            $this->___keyspace = self::$_gSettings[$cluster]['keyspace'];
-        }
-        elseif(isset(self::$_gSettings[self::$_defaultCluster]['keyspace']))
-        {
-            $this->___keyspace = self::$_gSettings[self::$_defaultCluster]['keyspace'];
-        }
-
         if($cluster && !isset(self::$_gSettings[$cluster]))
         {
-            throw new Exception("No settings for provided cluser $cluster",400);
+            throw new Exception("No settings for provided cluster $cluster",400);
         }
 
-				self::$_pluginSettings[$cluster] = array();
+				if(isset(self::$_gSettings[$cluster]))
+				{
+					$settings = self::$_gSettings[$cluster];
+				}
+				elseif(isset(self::$_gSettings[self::$_defaultCluster]))
+				{
+					$settings = self::$_gSettings[self::$_defaultCluster];
+				}
+				else
+					throw new Exception("No settings for default cluster",400);
+
+
+				//todo add multi hosts
+				$this->___accessPoint.=$settings['protocol'];
+				if(isset($settings['username']) && isset($settings['password']))
+				{
+					$this->___accessPoint.=$settings['username'].':'.$settings['password']."@";
+				}
+
+				$this->___accessPoint.=$settings['host'][0].":".$settings['port']."/";
+
+
+				//self::$_pluginSettings[$cluster] = array();
     }
 
     public static function cluster(array $settings,$cluster='default')
@@ -44,9 +57,8 @@ class Client
         $default                = (isset($settings['default']) ? (bool) $settings['default'] : false);
 
         $settings['host']       = isset($settings['host']) ? $settings['host'] : @$settings['hosts'];
-        $settings['port']       = isset($settings['port']) ? (int) $settings['port'] : 9042;
-
-        $settings['keyspace']   = isset($settings['keyspace']) ? $settings['keyspace'] : null;
+        $settings['port']       = isset($settings['port']) ? (int) $settings['port'] : 9200;
+				$settings['protocol']   = isset($settings['protocol']) ? $settings['protocol'] : 'http://';
 
         if(!isset($settings['host']))
         {
@@ -71,182 +83,49 @@ class Client
 			return $this->___cluster;
 		}
 
-    public static function setPluginSetting($settingName, $value, $cluster='default')
+		public function get($endpoint)
 		{
-			self::$_pluginSettings[$cluster][$settingName] = $value;
+			return $this->execute($endpoint, 'GET');
 		}
 
-		public static function getPluginSetting($settingName,$cluster='default')
+		public function put($endpoint, $data = null)
 		{
-			return @self::$_pluginSettings[$cluster][$settingName];
+			return $this->execute($endpoint, 'PUT', $data);
 		}
 
-    public function keyspace($keyspace=null)
-    {
-        if($keyspace)
-        {
-            $this->___keyspace = $keyspace;
-            return $this;
-        }
-        else
-        {
-            return $this->___keyspace;
-        }
-    }
+		public function post($endpoint, $data = null)
+		{
+			return $this->execute($endpoint, 'POST', $data);
+		}
 
-    public function connector()
-    {
-        $this->connect();
+		public function delete($endpoint, $data = null)
+		{
+			return $this->execute($endpoint, 'DELETE', $data);
+		}
 
-        return $this->___connection;
-    }
+		public function execute($endpoint, $method = 'GET', $data = null,  $contentType ='application/json')
+		{
+			$endpoint = ltrim($endpoint, '/');
 
-    public function connect()
-    {
-        if(!isset(self::$_gSettings[$this->___cluster]))
-        {
-            throw new \Exception("Please specify your cluster settings first");
-        }
+			$pretty = strpos($endpoint,'?') === false ? '?' :'&';
+			$pretty.= 'pretty=true';
 
-        $this->___connection        = Connection::getOne($this->___cluster);
-        if($this->___connection)
-        {
-            return $this;
-        }
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_URL, $this->___accessPoint.$endpoint.$pretty);
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			if ($data)
+			{
+				if (!is_string($data)) $data = json_encode($data);
 
-        $settings                   = self::$_gSettings[$this->___cluster];
+				curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+				curl_setopt( $curl, CURLOPT_HTTPHEADER, array('Content-Type:'.$contentType));
+			}
+			$res = curl_exec($curl);
+			curl_close($curl);
 
-        $cluster = \Cassandra::cluster();
-
-        call_user_func_array(array($cluster,'withContactPoints'),$settings['host']);
-
-        $cluster
-            ->withPort($settings['port'])
-            ->withRoundRobinLoadBalancingPolicy(); //todo - enable more LB policies
-
-        if(isset($settings['consistency']))
-            $cluster->withDefaultConsistency($settings['consistency']);
-
-        if(isset($settings['pageSize']))
-            $cluster->withDefaultPageSize($settings['pageSize']);
-
-        if(isset($settings['timeout']))
-            $cluster->withDefaultTimeout($settings['timeout']);
-
-				if(isset($settings['connectTimeout']))
-					$cluster->withConnectTimeout($settings['connectTimeout']);
-
-				if(isset($settings['requestTimeout']))
-					$cluster->withRequestTimeout($settings['requestTimeout']);
-
-        if(@$settings['username'] && @$settings['password'])
-            $cluster->withCredentials($settings['username'], $settings['password']);
-
-				if(isset($settings['ioThreads']))
-					$cluster->withIOThreads($settings['ioThreads']);
-
-        if(isset($settings['routing']))
-        {
-            if(is_array($settings['routing']))
-            {
-                foreach($settings['routing'] as $routing)
-                {
-                    if ($routing == Connection::ROUTING_TOKEN_AWARE) {
-                        $cluster->withTokenAwareRouting(true);
-                        break;
-                    }
-
-                    if ($routing == Connection::ROUTING_LATENCY_AWARE) {
-                        $cluster->withLatencyAwareRouting(true);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                if ($settings['routing'] == Connection::ROUTING_TOKEN_AWARE)
-                    $cluster->withTokenAwareRouting(true);
-
-                if ($settings['routing'] == Connection::ROUTING_LATENCY_AWARE)
-                    $cluster->withLatencyAwareRouting(true);
-            }
-        }
-
-
-        if(@$settings['persistentSessions'])
-            $cluster->withPersistentSessions((bool) $settings['persistentSessions']);
-
-
-        $session = $cluster->build()->connect();
-        $this->___connection = $session;
-
-        Connection::setOne($this->___cluster,$this->___connection);
-
-        return $this;
-    }
-
-    protected $_preparedQuery;
-
-    public function prepare($preparedQuery)
-    {
-        $this->connect();
-
-        $this->_preparedQuery           = $this->___connection->prepare($preparedQuery);
-
-        return $this;
-    }
-
-    protected $_queryOptions = array();
-
-    public function queryOptions($options)
-    {
-        $this->_queryOptions    = $options;
-
-        return $this;
-    }
-
-    public function execute($input=null)
-    {
-        $this->connect();
-
-        $queryOptions   = $this->_queryOptions;
-        $query          = $this->_preparedQuery;
-
-        if($input && is_array($input))
-        {
-            $compiledArguments = [];
-            foreach ($input as $arg) {
-                if ($arg instanceof Type\Uuid)
-                    $compiledArguments[] = new \Cassandra\Uuid((string) $arg);
-
-                elseif (
-                    $arg instanceof Type\Timestamp OR
-                    $arg instanceof Type\BigInt OR
-										$arg instanceof Type\Map
-                ) {
-                    $compiledArguments[] = $arg->value();
-                }
-
-                elseif ($arg instanceof Type\AutoIncrement)
-                    $compiledArguments[] = new \Cassandra\BigInt((string) $arg->value());
-
-                else
-                    $compiledArguments[] = $arg;
-            }
-
-            $queryOptions = array_merge($this->_queryOptions, array(
-                'arguments' => $compiledArguments
-            ));
-        }
-        elseif($input && is_string($input))
-        {
-            $query = $input;
-        }
-
-        $result = $this->___connection->execute($query, $queryOptions);
-
-        return new Result($result,$this->___connection);
-    }
+			return $res;
+		}
 
     public function escape($string,$fromEncoding='UTF-8',$toEncoding='UTF-8')
     {
@@ -261,9 +140,9 @@ class Client
         return str_replace($search, $replace, $string);
     }
 
-    public function __get($table)
+    public function __get($index)
     {
-        $query = new Query($table, $this->___keyspace);
+        $query = new Query($index);
 
         return $query;
     }

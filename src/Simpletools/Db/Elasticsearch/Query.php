@@ -341,19 +341,37 @@ class Query implements \Iterator
 //    }
 //
 
-    public function run($options=array())
+    public function run(array $args = [])
     {
         if($this->_result) return $this;
         $query = $this->getQuery(true);
 
-//        if(!$options)
-//        {
-//            $options = $this->___options;
-//        }
+				if($args)
+				{
+					if($this->_query['type'] == 'SQL')
+					{
+						$query['data']['query'] = $this->_prepareQuery($query['data']['query'],$args);
+					}
+					elseif ($this->_query['type'] == 'SEARCH' || $this->_query['type'] == 'UPDATE' || $this->_query['type'] == 'UPDATE ONE' ||
+						$this->_query['type'] == 'DELETE' || $this->_query['type'] == 'DELETE ONE'
+					)
+					{
+						$query['data'] = $this->_prepareQuery($query['data'],$args, true);
+					}
+				}
+
 				$query['type'] = $this->_query['type'];
+
+				//echo"<pre>";var_dump($query);
 
         $this->_result = new Result($this->_client->execute($query['endpoint'], $query['method'],$query['data']), $query);
 
+        
+        if(@$this->_query['cursorColumns'])
+				{
+					$this->_result->setCursorColumns($this->_query['cursorColumns']);
+				}
+        
         return $this;
     }
 
@@ -366,7 +384,7 @@ class Query implements \Iterator
 //        //return $this->run();
 //    }
 
-    public function _escape($value)
+    public function _escape($value, $doubleQuote = false)
     {
         if(is_null($value))
         {
@@ -374,11 +392,12 @@ class Query implements \Iterator
         }
         else
         {
-            return "'".$this->_client->escape($value)."'";
+        	if($doubleQuote) return '"'.$this->_client->escape($value).'"';
+        	else return "'".$this->_client->escape($value)."'";
         }
     }
 
-    private function _prepareQuery($query, array $args)
+    private function _prepareQuery($query, array $args, $doubleQuote = false)
     {
         foreach($args as $arg)
         {
@@ -389,11 +408,10 @@ class Query implements \Iterator
                     $arg = str_replace('?','<--SimpleMySQL-QuestionMark-->',$arg);
                 }
 
-                $arg = $this->_escape($arg);
+                $arg = $this->_escape($arg, $doubleQuote);
             }
             elseif(
-                $arg instanceof Sql OR
-                $arg instanceof Json
+                $arg instanceof Sql
             )
             {
                 $arg = (string) $arg;
@@ -436,6 +454,15 @@ class Query implements \Iterator
     public function getQuery($runtime=false)
     {
         $args = [];
+
+        if(@$this->_query['rawQuery'])
+				{
+					return [
+						'endpoint' => $this->_query['endpoint'],
+						'method' => $this->_query['method'],
+						'data' => $this->_query['data']
+					];
+				}
 
         if(!isset($this->_query['type']))
             $this->_query['type']		= "SELECT";
@@ -1105,5 +1132,54 @@ class Query implements \Iterator
 			return (new Doc($id))->table($this->_query['index']);
 		}
 
+		public function getCursorId()
+		{
+			return $this->_result->getCursorId();
+		}
+
+		public function getScrollId()
+		{
+			return $this->_result->getScrollId();
+		}
+
+		public function getCurrentPage()
+		{
+			return $this->_result->getCurrentPage();
+		}
+
+		public function getByCursorId($cursorId, $columns = [])
+		{
+			$this->_query['rawQuery'] = true;
+			$this->_query['type'] = "SQL";
+			$this->_query['data'] = [
+				'cursor' => $cursorId,
+				//"columnar" => true
+			];
+			$this->_query['method'] = 'POST';
+			$this->_query['endpoint'] = '/_sql?format=json';
+			$this->_query['cursorColumns'] = $columns;
+			
+
+			return $this;
+		}
+
+		public function getCursorColumns()
+		{
+			return $this->_result->getCursorColumns();
+		}
+
+	public function getByScrollId($scrollId, $alive = '1m')
+	{
+		$this->_query['rawQuery'] = true;
+		$this->_query['type'] = "SEARCH";
+		$this->_query['data'] = [
+			'scroll_id' => $scrollId,
+			"scroll" => $alive
+		];
+		$this->_query['method'] = 'POST';
+		$this->_query['endpoint'] = '/_search/scroll';
+
+		return $this;
+	}
 
 }

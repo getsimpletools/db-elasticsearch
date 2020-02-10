@@ -107,11 +107,13 @@ class Client
 		{
 			$endpoint = ltrim($endpoint, '/');
 
-			$pretty = strpos($endpoint,'?') === false ? '?' :'&';
-			$pretty.= 'pretty=true';
+			if(strpos($endpoint,'?') === false)
+				$endpoint.='?pretty=true';
+			else
+				$endpoint = str_replace('?','?pretty=true&',$endpoint);
 
 			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $this->___accessPoint.$endpoint.$pretty);
+			curl_setopt($curl, CURLOPT_URL, $this->___accessPoint.$endpoint);
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			if ($data)

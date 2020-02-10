@@ -89,7 +89,7 @@ class Bulk
 						'_id' => $rawQuery['id']
 					]]);
 
-					$this->_queriesParsed[] = is_string($query['data']) ? $query['data'] : json_encode($query['data']);
+					$this->_queriesParsed[] = is_string($query['data']) ? json_encode(json_decode($query['data'])) : json_encode($query['data']);
 				}
 				elseif ($rawQuery['type'] == 'DELETE ONE')
 				{

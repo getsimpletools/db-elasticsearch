@@ -55,7 +55,7 @@ class Result implements \Iterator
     protected $_schema = array();
 		protected $_convertMapToJson;
 		protected $_data = array();
-		protected $_sqlColumns  = [];
+		protected $_cursorColumns  = [];
 
     public function __construct($result, $query)
 		{
@@ -78,24 +78,34 @@ class Result implements \Iterator
 
 			if($this->_query['type'] == 'GET')
 			{
-				if(!$this->_result->found)
+				if(!@$this->_result->found)
 					throw new Exception('Document not found',404);
 
 				$this->_data[] = $this->_result->_source;
 			}
 			elseif($this->_query['type'] == 'SELECT' || $this->_query['type'] == 'SQL')
 			{
-				if(!$this->_sqlColumns)
+				if(!$this->_cursorColumns && @$this->_result->columns)
 				{
 					foreach ($this->_result->columns as  $col)
 					{
-						$this->_sqlColumns[] = $col->name;
+						$this->_cursorColumns[] = $col->name;
 					}
 				}
 
-				foreach ($this->_result->rows as $row)
+				if($this->_cursorColumns)
 				{
-					$this->_data[] = (object) array_combine($this->_sqlColumns, $row);
+					foreach ($this->_result->rows as $row)
+					{
+						$this->_data[] = (object) array_combine($this->_cursorColumns, $row);
+					}
+				}
+				else
+				{
+					foreach ($this->_result->rows as $row)
+					{
+						$this->_data[] = $row;
+					}
 				}
 			}
 			elseif($this->_query['type'] == 'SEARCH')
@@ -189,6 +199,7 @@ class Result implements \Iterator
 
     public function fetchAll()
     {
+				$this->parseResponse();
         if($this->isEmpty()) return array();
 
         $datas = array();
@@ -302,5 +313,35 @@ class Result implements \Iterator
 
 		return $this;
 	}
+
+	public function getCursorId()
+	{
+		return $this->_cursor;
+	}
+
+	public function getCursorColumns()
+	{
+		$this->parseResponse();
+		return $this->_cursorColumns;
+	}
+
+	public function setCursorColumns(array $columns)
+	{
+		$this->_cursorColumns = $columns;
+	}
+
+	public function getScrollId()
+	{
+		return $this->_scroll_id;
+	}
+
+	public function getCurrentPage()
+	{
+		$this->parseResponse();
+		return $this->_data;
+	}
+
+
+
 
 }

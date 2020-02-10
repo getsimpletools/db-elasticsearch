@@ -39,22 +39,49 @@ namespace Simpletools\Db\Elasticsearch;
 
 use Simpletools\Db\Elasticsearch\Doc\Body;
 
-class DSL extends Body
+class DSL
 {
-	protected $_object;
+	protected $_statement;
 
-	public function __construct($object)
+	public function __construct($dsl)
 	{
-		if ($object instanceof DSL)
+		if ($dsl instanceof DSL)
 		{
-			$this->_object = $object->toObject();
-		} else
+			$this->_statement = (string)$dsl;
+		}
+		elseif (is_string($dsl))
 		{
-			if (is_array($object)) $object = (object)$object;
-			elseif (is_string($object)) $object = json_decode($object);
-
-			$this->_object = $object;
+			$this->_statement = $dsl;
+		}
+		else
+		{
+			$this->_statement = json_encode($dsl);
 		}
 	}
+
+	public function jsonSerialize() {
+		return json_decode($this->_statement);
+	}
+
+	public function __toString()
+	{
+		return $this->_statement;
+	}
+
+	public function toJson()
+	{
+		return $this->_statement;
+	}
+
+	public function toArray()
+	{
+		return json_decode($this->_statement, true);
+	}
+
+	public function toObject()
+	{
+		return json_encode($this->_statement);
+	}
+
 }
 

@@ -45,6 +45,7 @@ class Result implements \Iterator
     protected $_cursor = null;
 		protected $_scroll_id = null;
 		protected $_client = null;
+		protected $_autoScroll = false;
 
     protected $_firstRowCache	= null;
     protected $_firstRowCached	= false;
@@ -157,7 +158,7 @@ class Result implements \Iterator
 
         $result = array_shift($this->_data);
 
-				if(!$result)
+				if(!$result && $this->_autoScroll)
 				{
 					if($this->_cursor === null && $this->_scroll_id === null)
 						return false;
@@ -341,6 +342,11 @@ class Result implements \Iterator
 		return $this->_data;
 	}
 
+	public function autoScroll()
+	{
+		$this->_autoScroll = true;
+		return $this;
+	}
 
 
 

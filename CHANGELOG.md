@@ -1,4 +1,8 @@
-### 0.0.1 (2020-02-10)
+### 0.0.3 (2020-02-11)
+1. **Simpletools\Db\Elasticsearch\Query**
+    1. Added `->autoScroll()` to enable auto pagination on a foreach and `->fetch()`
+
+### 0.0.2 (2020-02-10)
 1. **Simpletools\Db\Elasticsearch\Query**
     1. Added `->getCursorId()` and `->getByCursorId()` for the manual SQL pagination
     2. Added `->getScrollId()` and `->getByScrollId()` for the manual Search pagination

@@ -371,6 +371,11 @@ class Query implements \Iterator
 				{
 					$this->_result->setCursorColumns($this->_query['cursorColumns']);
 				}
+
+				if(@$this->_query['autoScroll'])
+				{
+					$this->_result->autoScroll();
+				}
         
         return $this;
     }
@@ -1179,6 +1184,12 @@ class Query implements \Iterator
 		$this->_query['method'] = 'POST';
 		$this->_query['endpoint'] = '/_search/scroll';
 
+		return $this;
+	}
+
+	public function autoScroll()
+	{
+		$this->_query['autoScroll'] = true;
 		return $this;
 	}
 

@@ -4,7 +4,7 @@ namespace Simpletools\Db\Elasticsearch;
 
 use mysql_xdevapi\Statement;
 use Simpletools\Db\Elasticsearch\Doc\Body;
-
+use Simpletools\Db\Replicator;
 
 class Query implements \Iterator
 {
@@ -16,7 +16,7 @@ class Query implements \Iterator
 
     protected $_result      = null;
 
-    public function __construct($index)
+    public function __construct($index = null)
     {
         $this->index($index);
 
@@ -331,6 +331,36 @@ class Query implements \Iterator
 			return $this;
 		}
 
+		public function addAlias($index, $alias)
+		{
+			$this->_query['type'] = "ALIASES";
+			if(!@$this->_query['actions'])
+				$this->_query['actions'] = [];
+
+			$this->_query['actions'][] = [
+				'add' => [
+					'index' => $index,
+					'alias' => $alias
+				]
+			];
+			return $this;
+		}
+
+		public function removeAlias($index, $alias)
+		{
+			$this->_query['type'] = "ALIASES";
+			if(!@$this->_query['actions'])
+				$this->_query['actions'] = [];
+
+			$this->_query['actions'][] = [
+				'remove' => [
+					'index' => $index,
+					'alias' => $alias
+				]
+			];
+			return $this;
+		}
+
 
 //    protected $___options = array();
 //    public function options($options=array())
@@ -362,11 +392,29 @@ class Query implements \Iterator
 
 				$query['type'] = $this->_query['type'];
 
-				//echo"<pre>";var_dump($query);
-
         $this->_result = new Result($this->_client->execute($query['endpoint'], $query['method'],$query['data']), $query);
 
-        
+				if($this->_query['type'] == 'INSERT')
+				{
+					Replicator::trigger('elasticsearch://write@'.$this->_query['index'],(object)[
+						'_id' => $this->_query['id'],
+						'_source' => $this->_query['data']->toObject()
+					]);
+				}
+				elseif ($this->_query['type'] == 'UPDATE ONE' && !($this->_query['data'] instanceof DSL))
+				{
+					Replicator::trigger('elasticsearch://update@'.$this->_query['index'],(object)[
+						'_id' => $this->_query['id'],
+						'_source' => $this->_query['data']->toObject()
+					]);
+				}
+				elseif ($this->_query['type'] == 'DELETE ONE')
+				{
+					Replicator::trigger('elasticsearch://update@'.$this->_query['index'],(object)[
+						'_id' => $this->_query['id'],
+					]);
+				}
+
         if(@$this->_query['cursorColumns'])
 				{
 					$this->_result->setCursorColumns($this->_query['cursorColumns']);
@@ -614,7 +662,16 @@ class Query implements \Iterator
 						'data' => null
 					];
 				}
-
+				elseif($this->_query['type']=='ALIASES')
+				{
+					return [
+						'endpoint' => '/_aliases',
+						'method' => 'POST',
+						'data' => [
+							'actions' => $this->_query['actions']
+						]
+					];
+				}
 
 			$query 		= array();
 

@@ -1,3 +1,11 @@
+### 0.1.0 (2020-02-18)
+1. **Simpletools\Db\Elasticsearch**
+    1. Added integration with `Simpletools\Db\Replicator` to replicate data between databases
+2. **Simpletools\Db\Elasticsearch\Query**
+    1. Added `->addAlias()` and `->removeAlias()` to control aliases
+3 **Simpletools\Db\Elasticsearch\Batch**
+    1. Added `->constraint()` to force constraint index
+
 ### 0.0.3 (2020-02-11)
 1. **Simpletools\Db\Elasticsearch\Query**
     1. Added `->autoScroll()` to enable auto pagination on a foreach and `->fetch()`
@@ -18,5 +26,5 @@
 6. **Simpletools\Db\Elasticsearch\Query**
 7. **Simpletools\Db\Elasticsearch\Result**
 8. **Simpletools\Db\Elasticsearch\SQL**
-9. **Simpletools\Db\Elasticsearch\Bulk**
+9. **Simpletools\Db\Elasticsearch\Batch**
 10. **Simpletools\Db\Elasticsearch\Doc\Body**

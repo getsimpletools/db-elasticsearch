@@ -1,19 +1,29 @@
 <?php
 
 namespace Simpletools\Db\Elasticsearch;
+use Simpletools\Db\Replicator;
 
-class Bulk
+class Batch
 {
     protected $_queries = array();
     protected $_client;
 
     protected $_queriesParsed = array();
 
-    protected $_runOnBulkSize = 0; //0 - only manual bulk run()
+    protected $_runOnBulkSize = 0;
+    protected $_index;
+		protected $_replication = false;
+		protected $_replicationQuery;
 
     public function __construct($bulkSize = 0)
     {
 			$this->_runOnBulkSize = (int)$bulkSize;
+
+			$this->_replicationQuery =  (object)[
+				'insert' => [],
+				'update' =>[],
+				'delete' =>[]
+			];
     }
 
     public function client($client)
@@ -27,6 +37,12 @@ class Bulk
 
         return $this;
     }
+
+		public function constraint($index)
+		{
+			$this->_index = $index;
+			return $this;
+		}
 
     public function add($query)
     {
@@ -63,12 +79,22 @@ class Bulk
     {
     	if($this->_queriesParsed) return $this->_queriesParsed;
 
+    	if($this->_index)//constraint
+			{
+				$this->_replication = Replicator::exists('elasticsearch://bulk@'.$this->_index);
+			}
+
+
 			foreach ($this->_queries as $query)
 			{
 				$rawQuery = $query->getRawQuery();
 
 				if ($rawQuery['type'] != 'INSERT' && $rawQuery['type'] != 'UPDATE ONE' && $rawQuery['type'] != 'DELETE ONE')
 					throw new Exception("Only ->insert(), ->set(),->updateOne(),->updateOne() allow in the Bulk Operation", 400);
+
+
+				if($this->_index && $rawQuery['index'] != $this->_index)
+					throw new \Exception("Your bulk Query(".$rawQuery['index'].") does not match constraint index(".$this->_index.")");
 
 
 				$query = $query->getQuery();
@@ -81,6 +107,14 @@ class Bulk
 					]);
 
 					$this->_queriesParsed[] = json_encode($query['data']);
+
+					if($this->_replication)
+					{
+						$this->_replicationQuery->insert[] = (object)[
+							'_id' => $rawQuery['id'],
+							'_source' => $query['data']
+						];
+					}
 				}
 				elseif ($rawQuery['type'] == 'UPDATE ONE')
 				{
@@ -90,6 +124,14 @@ class Bulk
 					]]);
 
 					$this->_queriesParsed[] = is_string($query['data']) ? json_encode(json_decode($query['data'])) : json_encode($query['data']);
+
+					if($this->_replication)
+					{
+						$this->_replicationQuery->update[] = (object)[
+							'_id' => $rawQuery['id'],
+							'_source' => is_string($query['data']) ? json_decode($query['data']) : $query['data']
+						];
+					}
 				}
 				elseif ($rawQuery['type'] == 'DELETE ONE')
 				{
@@ -97,6 +139,13 @@ class Bulk
 						'_index' => $rawQuery['index'],
 						'_id' => $rawQuery['id']]
 					]);
+
+					if($this->_replication)
+					{
+						$this->_replicationQuery->delete[] = (object)[
+							'_id' => $rawQuery['id'],
+						];
+					}
 				}
 			}
 
@@ -129,6 +178,11 @@ class Bulk
 					'type' => "BULK"
 				]);
 
+				if($this->_replication)
+				{
+					Replicator::trigger('elasticsearch://bulk@'.$this->_index, $this->_replicationQuery);
+				}
+
         $this->reset();
 
         return $result->getRawResult();
@@ -146,6 +200,11 @@ class Bulk
     {
         $this->_queries         = array();
         $this->_queriesParsed   = array();
+				$this->_replicationQuery =  (object)[
+					'insert' => [],
+					'update' =>[],
+					'delete' =>[]
+				];
 
         return $this;
     }

@@ -1,3 +1,9 @@
+### 0.1.1 (2020-05-22)
+1. **Simpletools\Db\Elasticsearch\Query**
+    1. Added `->getTotalCount()` for search results
+2. **Simpletools\Db\Elasticsearch\Result**
+    1. Added `->getTotalCount()` for search results
+
 ### 0.1.0 (2020-02-18)
 1. **Simpletools\Db\Elasticsearch**
     1. Added integration with `Simpletools\Db\Replicator` to replicate data between databases

@@ -57,6 +57,7 @@ class Result implements \Iterator
 		protected $_convertMapToJson;
 		protected $_data = array();
 		protected $_cursorColumns  = [];
+		protected $_totalCount=0;
 
     public function __construct($result, $query)
 		{
@@ -76,6 +77,8 @@ class Result implements \Iterator
 			if(!is_string($this->_result)) return $this;
 
 			if(!$this->_result = json_decode($this->_result)) throw new Exception('JSON Parsing Error',500);
+
+			$this->_totalCount =0;
 
 			if($this->_query['type'] == 'GET')
 			{
@@ -111,6 +114,9 @@ class Result implements \Iterator
 			}
 			elseif($this->_query['type'] == 'SEARCH')
 			{
+				if(isset($this->_result->hits->total->value))
+					$this->_totalCount = $this->_result->hits->total->value;
+
 				if(isset($this->_result->hits->hits))
 				{
 					$this->_data = $this->_result->hits->hits;
@@ -348,6 +354,10 @@ class Result implements \Iterator
 		return $this;
 	}
 
+	public function getTotalCount()
+	{
+		return $this->_totalCount;
+	}
 
 
 }

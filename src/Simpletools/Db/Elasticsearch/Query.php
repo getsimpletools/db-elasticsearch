@@ -1250,4 +1250,9 @@ class Query implements \Iterator
 		return $this;
 	}
 
+	public function getTotalCount()
+	{
+		return $this->_result->getTotalCount();
+	}
+
 }

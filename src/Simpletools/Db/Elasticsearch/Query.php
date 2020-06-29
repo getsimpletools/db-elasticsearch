@@ -397,15 +397,15 @@ class Query implements \Iterator
 				if($this->_query['type'] == 'INSERT')
 				{
 					Replicator::trigger('elasticsearch://write@'.$this->_query['index'],(object)[
-						'_id' => $this->_query['id'],
-						'_source' => (object)$this->_query['data']
+						'_id' => $this->_result->getInsertedId(),
+						'_source' =>is_string($query['data']) ? json_decode($query['data']) : json_decode(json_encode($this->_query['data']))
 					]);
 				}
 				elseif ($this->_query['type'] == 'UPDATE ONE' && !($this->_query['data'] instanceof DSL))
 				{
 					Replicator::trigger('elasticsearch://update@'.$this->_query['index'],(object)[
 						'_id' => $this->_query['id'],
-						'_source' => (object)$this->_query['data']
+						'_source' =>  is_string($query['data']) ? json_decode($query['data']) : json_decode(json_encode($this->_query['data']))
 					]);
 				}
 				elseif ($this->_query['type'] == 'DELETE ONE')

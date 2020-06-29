@@ -398,14 +398,14 @@ class Query implements \Iterator
 				{
 					Replicator::trigger('elasticsearch://write@'.$this->_query['index'],(object)[
 						'_id' => $this->_query['id'],
-						'_source' => $this->_query['data']->toObject()
+						'_source' => (object)$this->_query['data']
 					]);
 				}
 				elseif ($this->_query['type'] == 'UPDATE ONE' && !($this->_query['data'] instanceof DSL))
 				{
 					Replicator::trigger('elasticsearch://update@'.$this->_query['index'],(object)[
 						'_id' => $this->_query['id'],
-						'_source' => $this->_query['data']->toObject()
+						'_source' => (object)$this->_query['data']
 					]);
 				}
 				elseif ($this->_query['type'] == 'DELETE ONE')

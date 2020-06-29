@@ -1,3 +1,7 @@
+### 0.1.2 (2020-06-29)
+1. **Simpletools\Db\Elasticsearch\Query**
+ 1. Fixed the replication object bug
+ 
 ### 0.1.1 (2020-05-22)
 1. **Simpletools\Db\Elasticsearch\Query**
     1. Added `->getTotalCount()` for search results

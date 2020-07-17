@@ -1,3 +1,7 @@
+### 0.1.4 (2020-07-17)
+1. **Simpletools\Db\Elasticsearch\Batch**
+ 1. Added error handling
+
 ### 0.1.3 (2020-06-29)
 1. **Simpletools\Db\Elasticsearch\Query**
  1. Fixed the replication inserted ID bug

@@ -14,6 +14,8 @@ class Batch
     protected $_index;
 		protected $_replication = false;
 		protected $_replicationQuery;
+		protected $_throwError = true;
+		protected $_result = false;
 
     public function __construct($bulkSize = 0)
     {
@@ -41,6 +43,12 @@ class Batch
 		public function constraint($index)
 		{
 			$this->_index = $index;
+			return $this;
+		}
+
+		public function throwError(bool $bool=true)
+		{
+			$this->_throwError = $bool;
 			return $this;
 		}
 
@@ -160,6 +168,7 @@ class Batch
 
     public function run()
     {
+				$this->_result = null;
         if(!$this->_queries)
         {
             throw new Exception("Empty bulk",400);
@@ -174,9 +183,24 @@ class Batch
             $this->_client = new Client();
 
 
-				$result = new Result($this->_client->execute('_bulk','POST',$this->_queriesParsed,'application/x-ndjson'), [
+				$this->_result = new Result($this->_client->execute('_bulk','POST',$this->_queriesParsed,'application/x-ndjson'), [
 					'type' => "BULK"
 				]);
+
+				if($this->_throwError && @$this->_result->getRawResult()->errors)
+				{
+					$msg = 'Undefined bulk insert error, check raw result for more details';
+
+					foreach ($this->_result->getRawResult()->items as $index => $item)
+					{
+						if(@$item->index->error->reason)
+						{
+							$msg = 'Item Index: '.$index.' : '.$item->index->error->reason;
+							break;
+						}
+					}
+					throw new Exception($msg,400);
+				}
 
 				if($this->_replication)
 				{
@@ -185,8 +209,16 @@ class Batch
 
         $this->reset();
 
-        return $result->getRawResult();
+				return $this->_result->getRawResult();
     }
+
+    public function getRawResult()
+		{
+			if($this->_result)
+				return $this->_result->getRawResult();
+
+			return null;
+		}
 
     public function runIfNotEmpty()
     {

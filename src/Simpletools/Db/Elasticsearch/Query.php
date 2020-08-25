@@ -1204,6 +1204,11 @@ class Query implements \Iterator
 			return $this->_result->getScrollId();
 		}
 
+        public function aggs()
+        {
+            return $this->_result->aggs();
+        }
+
 		public function getCurrentPage()
 		{
 			return $this->_result->getCurrentPage();

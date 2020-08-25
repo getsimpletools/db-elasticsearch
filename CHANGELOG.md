@@ -1,14 +1,21 @@
+### 0.1.5 (2020-08-25)
+1. **Simpletools\Db\Elasticsearch\Query**
+   1. Added `->aggs()` to retrieve aggregations
+1. **Simpletools\Db\Elasticsearch\Result**
+   1. Added `->aggs()` to retrieve aggregations
+   2. Updated `->getScrollId()` and `->getTotalCount()` so they can run before `->fetch()`
+ 
 ### 0.1.4 (2020-07-17)
 1. **Simpletools\Db\Elasticsearch\Batch**
- 1. Added error handling
+   1. Added error handling
 
 ### 0.1.3 (2020-06-29)
 1. **Simpletools\Db\Elasticsearch\Query**
- 1. Fixed the replication inserted ID bug
+   1. Fixed the replication inserted ID bug
 
 ### 0.1.2 (2020-06-29)
 1. **Simpletools\Db\Elasticsearch\Query**
- 1. Fixed the replication object bug
+   1. Fixed the replication object bug
  
 ### 0.1.1 (2020-05-22)
 1. **Simpletools\Db\Elasticsearch\Query**

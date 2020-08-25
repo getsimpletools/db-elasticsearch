@@ -72,6 +72,13 @@ class Result implements \Iterator
 			}
 		}
 
+		public function aggs()
+        {
+            $this->parseResponse();
+
+            return isset($this->_result->aggregations) ? $this->_result->aggregations  : null;
+        }
+
 		public function parseResponse()
 		{
 			if(!is_string($this->_result)) return $this;
@@ -339,6 +346,7 @@ class Result implements \Iterator
 
 	public function getScrollId()
 	{
+        $this->parseResponse();
 		return $this->_scroll_id;
 	}
 
@@ -356,6 +364,7 @@ class Result implements \Iterator
 
 	public function getTotalCount()
 	{
+        $this->parseResponse();
 		return $this->_totalCount;
 	}
 

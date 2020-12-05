@@ -52,6 +52,9 @@ class Doc
 
 	public function __construct($id=null, $index=null)
 	{
+		if(!is_string($id) && $id!==null)
+			throw new \Exception('Id must be string or null (auto generate)');
+
 		$this->_body = new Body((object) array());
 		$this->_id = $id;
 

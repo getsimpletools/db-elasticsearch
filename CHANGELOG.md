@@ -1,3 +1,12 @@
+### 0.1.7 (2021-03-29)
+1. **Simpletools\Db\Elasticsearch\Query**
+   1. Added `->routing()` method   
+2. **Simpletools\Db\Elasticsearch\Batch**
+  1. Added `->routing()` method
+  1. Added `->params()` method
+2. **Simpletools\Db\Elasticsearch\Doc**
+  1. Added `->routing()` method  
+
 ### 0.1.6 (2020-12-05)
 1. **Simpletools\Db\Elasticsearch\Doc**
    1. Validate Doc Id
@@ -5,7 +14,7 @@
 ### 0.1.5 (2020-08-25)
 1. **Simpletools\Db\Elasticsearch\Query**
    1. Added `->aggs()` to retrieve aggregations
-1. **Simpletools\Db\Elasticsearch\Result**
+2. **Simpletools\Db\Elasticsearch\Result**
    1. Added `->aggs()` to retrieve aggregations
    2. Updated `->getScrollId()` and `->getTotalCount()` so they can run before `->fetch()`
  

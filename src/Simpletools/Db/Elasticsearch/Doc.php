@@ -46,6 +46,7 @@ class Doc
 	protected $_query;
 	protected $_index;
 	protected $_columns;
+	protected $_routing;
 
 	protected $_body;
 
@@ -105,7 +106,8 @@ class Doc
 			throw new \Exception('Please specify index as an argument of ->$index()');
 
 		$this->_query = new Query($this->_index);
-
+		if($this->_routing)
+			$this->_query->routing($this->_routing);
 		$this->_query
 				->set($this->_id,$this->_body);
 
@@ -128,7 +130,8 @@ class Doc
 			throw new \Exception('Please specify index as an argument of ->$index()');
 
 		$this->_query = new Query($this->_index);
-
+		if($this->_routing)
+			$this->_query->routing($this->_routing);
 		$this->_query
 				->updateOne($this->_id,$dsl ? $dsl : $this->_body);
 
@@ -152,6 +155,9 @@ class Doc
 			throw new \Exception('Please specify index as an argument of ->$index()');
 
 		$this->_query = new Query($this->_index);
+		if($this->_routing)
+			$this->_query->routing($this->_routing);
+
 		$this->_query->columns($this->_columns)->getOne($this->_id);
 
 		return $this->_query;
@@ -208,6 +214,12 @@ class Doc
 		return $this;
 	}
 
+	public function routing($routing)
+	{
+		$this->_routing = $routing;
+		return $this;
+	}
+
 
 	public function getRemoveQuery()
 	{
@@ -215,6 +227,9 @@ class Doc
 			throw new \Exception('Please specify index as an argument of ->$index()');
 
 		$this->_query = new Query($this->_index);
+		if($this->_routing)
+			$this->_query->routing($this->_routing);
+
 		$this->_query->deleteOne($this->_id);
 
 		return $this->_query;

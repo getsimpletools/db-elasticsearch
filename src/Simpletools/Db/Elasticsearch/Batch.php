@@ -16,6 +16,7 @@ class Batch
 		protected $_replicationQuery;
 		protected $_throwError = true;
 		protected $_result = false;
+		protected $_params = array();
 
     public function __construct($bulkSize = 0)
     {
@@ -46,9 +47,9 @@ class Batch
 			return $this;
 		}
 
-		public function throwError(bool $bool=true)
+		public function throwError($bool=true)
 		{
-			$this->_throwError = $bool;
+			$this->_throwError = (bool)$bool;
 			return $this;
 		}
 
@@ -183,7 +184,7 @@ class Batch
             $this->_client = new Client();
 
 
-				$this->_result = new Result($this->_client->execute('_bulk','POST',$this->_queriesParsed,'application/x-ndjson'), [
+				$this->_result = new Result($this->_client->execute('_bulk'.$this->getParamLine(),'POST',$this->_queriesParsed,'application/x-ndjson'), [
 					'type' => "BULK"
 				]);
 
@@ -218,6 +219,51 @@ class Batch
 				return $this->_result->getRawResult();
 
 			return null;
+		}
+
+		public function routing($routing)
+		{
+			$this->_params = $routing;
+			return $this;
+		}
+
+		public function params($params)
+		{
+			if(is_string($params))
+			{
+				$arr = json_decode($params, true);
+				if(!$arr)
+				{
+					$arr = [];
+					foreach (explode('&',ltrim($params,'?')) as $pair)
+					{
+						$pair = explode('=', $pair);
+						if(count($pair) == 2) $arr[$pair[0]] = $pair[1];
+					}
+					$this->_params = array_merge(	$this->_params,$arr);
+				}
+			}
+			elseif (is_object($params)) $params = json_decode(json_encode($params), true);
+
+			if(is_array($params))
+			{
+				$this->_params = array_merge(	$this->_params,$params);
+			}
+
+			return $this;
+		}
+
+		protected function getParamLine()
+		{
+			$line = [];
+			foreach ($this->_params as $key => $val)
+			{
+				$line[] = $key.'='.$val;
+			}
+
+			if($line) return '?'.implode('&',$line);
+
+			return '';
 		}
 
     public function runIfNotEmpty()

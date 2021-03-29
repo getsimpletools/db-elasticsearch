@@ -205,14 +205,14 @@ class Query implements \Iterator
 						$pair = explode('=', $pair);
 						if(count($pair) == 2) $arr[$pair[0]] = $pair[1];
 					}
-					$this->_query['params'] = $arr;
+					$this->_query['params'] = array_merge(	$this->_query['params'],$arr);
 				}
 			}
 			elseif (is_object($params)) $params = json_decode(json_encode($params), true);
 
 			if(is_array($params))
 			{
-				$this->_query['params'] = $params;
+				$this->_query['params'] = array_merge(	$this->_query['params'],$params);
 			}
 
 			return $this;
@@ -234,6 +234,12 @@ class Query implements \Iterator
 		public function scroll($alive ='1m')
 		{
 			$this->_query['params']['scroll'] = $alive;
+			return $this;
+		}
+
+		public function routing($routing)
+		{
+			$this->_query['params']['routing'] = $routing;
 			return $this;
 		}
 

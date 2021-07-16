@@ -1,11 +1,17 @@
+### 0.1.8 (2021-07-16)
+1. **Simpletools\Db\Elasticsearch\Query**
+    1. Added params to all endpoints   
+2. **Simpletools\Db\Elasticsearch\Doc**
+    1. Added `->params()` method  
+
 ### 0.1.7 (2021-03-29)
 1. **Simpletools\Db\Elasticsearch\Query**
    1. Added `->routing()` method   
 2. **Simpletools\Db\Elasticsearch\Batch**
-  1. Added `->routing()` method
-  1. Added `->params()` method
-2. **Simpletools\Db\Elasticsearch\Doc**
-  1. Added `->routing()` method  
+    1. Added `->routing()` method
+    2. Added `->params()` method
+3. **Simpletools\Db\Elasticsearch\Doc**
+    1. Added `->routing()` method  
 
 ### 0.1.6 (2020-12-05)
 1. **Simpletools\Db\Elasticsearch\Doc**

@@ -47,6 +47,7 @@ class Doc
 	protected $_index;
 	protected $_columns;
 	protected $_routing;
+	protected $_params;
 
 	protected $_body;
 
@@ -108,6 +109,8 @@ class Doc
 		$this->_query = new Query($this->_index);
 		if($this->_routing)
 			$this->_query->routing($this->_routing);
+		if($this->_params)
+			$this->_query->params($this->_params);
 		$this->_query
 				->set($this->_id,$this->_body);
 
@@ -132,6 +135,8 @@ class Doc
 		$this->_query = new Query($this->_index);
 		if($this->_routing)
 			$this->_query->routing($this->_routing);
+		if($this->_params)
+			$this->_query->params($this->_params);
 		$this->_query
 				->updateOne($this->_id,$dsl ? $dsl : $this->_body);
 
@@ -157,6 +162,8 @@ class Doc
 		$this->_query = new Query($this->_index);
 		if($this->_routing)
 			$this->_query->routing($this->_routing);
+		if($this->_params)
+			$this->_query->params($this->_params);
 
 		$this->_query->columns($this->_columns)->getOne($this->_id);
 
@@ -217,6 +224,12 @@ class Doc
 	public function routing($routing)
 	{
 		$this->_routing = $routing;
+		return $this;
+	}
+
+	public function params($params)
+	{
+		$this->_params = $params;
 		return $this;
 	}
 

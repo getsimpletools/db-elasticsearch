@@ -580,7 +580,7 @@ class Query implements \Iterator
 				if($this->_query['type']=='INSERT')
 				{
 					return [
-						'endpoint' => $this->_query['index']."/_doc/".$this->_query['id'],
+						'endpoint' => $this->_query['index']."/_doc/".$this->_query['id'].$this->getParamLine(),
 						'method' => $this->_query['id'] === null ? 'POST' : 'PUT',
 						'data' => $this->_query['data']
 					];
@@ -594,7 +594,7 @@ class Query implements \Iterator
 					}
 
 					return [
-						'endpoint' => $this->_query['index']."/_doc/".$this->_query['id'].$columns,
+						'endpoint' => $this->_query['index']."/_doc/".$this->_query['id'].$columns.$this->getParamLine(),
 						'method' => 'GET',
 						'data' => null
 					];
@@ -602,7 +602,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='UPDATE')
 				{
 					return [
-						'endpoint' => $this->_query['index']."/_update_by_query",
+						'endpoint' => $this->_query['index']."/_update_by_query".$this->getParamLine(),
 						'method' => 'POST',
 						'data' => $this->_query['data']
 					];
@@ -610,7 +610,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='UPDATE ONE')
 				{
 					return [
-						'endpoint' => $this->_query['index']."/_update/".$this->_query['id'],
+						'endpoint' => $this->_query['index']."/_update/".$this->_query['id'].$this->getParamLine(),
 						'method' => 'POST',
 						'data' => $this->_query['data'] instanceof DSL ? (string)$this->_query['data'] : [
 							'doc' => $this->_query['data']
@@ -620,7 +620,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='DELETE')
 				{
 					return [
-						'endpoint' => $this->_query['index']."/_delete_by_query",
+						'endpoint' => $this->_query['index']."/_delete_by_query".$this->getParamLine(),
 						'method' => 'POST',
 						'data' => $this->_query['data']
 					];
@@ -628,7 +628,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='DELETE ONE')
 				{
 					return [
-						'endpoint' => $this->_query['index']."/_doc/".$this->_query['id'],
+						'endpoint' => $this->_query['index']."/_doc/".$this->_query['id'].$this->getParamLine(),
 						'method' => 'DELETE',
 						'data' => null
 					];
@@ -655,7 +655,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='CREATE INDEX')
 				{
 					return [
-						'endpoint' => $this->_query['index'],
+						'endpoint' => $this->_query['index'].$this->getParamLine(),
 						'method' => 'PUT',
 						'data' => $this->_query['data']
 					];
@@ -663,7 +663,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='DROP INDEX')
 				{
 					return [
-						'endpoint' => $this->_query['index'],
+						'endpoint' => $this->_query['index'].$this->getParamLine(),
 						'method' => 'DELETE',
 						'data' => null
 					];
@@ -671,7 +671,7 @@ class Query implements \Iterator
 				elseif($this->_query['type']=='ALIASES')
 				{
 					return [
-						'endpoint' => '/_aliases',
+						'endpoint' => '/_aliases'.$this->getParamLine(),
 						'method' => 'POST',
 						'data' => [
 							'actions' => $this->_query['actions']

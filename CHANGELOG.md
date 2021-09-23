@@ -1,3 +1,9 @@
+### 0.1.9 (2021-09-23)
+1. **Simpletools\Db\Elasticsearch\Client**
+    1. Added multi hosts support
+    2. Added auto-reconnect to the next host
+    3. Added `timeout` and `connectTimeout` to the clusrter settings
+
 ### 0.1.8 (2021-07-16)
 1. **Simpletools\Db\Elasticsearch\Query**
     1. Added params to all endpoints   

@@ -10,7 +10,7 @@ class Client
 		protected static $_defaultCluster       = 'default';
     protected $___cluster	                = 'default';
 
-    protected $___accessPoint ='';
+    protected $___accessPoints =[];
     protected $___connection;
 
 
@@ -37,18 +37,19 @@ class Client
 				else
 					throw new Exception("No settings for default cluster",400);
 
+				$hosts = $settings['host'];
+				if(!is_array($hosts)) $hosts = [$hosts];
 
-				//todo add multi hosts
-				$this->___accessPoint.=$settings['protocol'];
+				foreach ($hosts as $host)
+				{
+					$accessPoint = $settings['protocol'];
 				if(isset($settings['username']) && isset($settings['password']))
 				{
-					$this->___accessPoint.=$settings['username'].':'.$settings['password']."@";
+						$accessPoint.=$settings['username'].':'.$settings['password']."@";
 				}
-
-				$this->___accessPoint.=$settings['host'][0].":".$settings['port']."/";
-
-
-				//self::$_pluginSettings[$cluster] = array();
+					$accessPoint.= $host.":".$settings['port']."/";
+					$this->___accessPoints[] = $accessPoint;
+				}
     }
 
     public static function cluster(array $settings,$cluster='default')
@@ -103,8 +104,10 @@ class Client
 			return $this->execute($endpoint, 'DELETE', $data);
 		}
 
-		public function execute($endpoint, $method = 'GET', $data = null,  $contentType ='application/json')
+		public function execute($endpoint, $method = 'GET', $data = null,  $contentType ='application/json',$attempt=0, $retryPoints=null)
 		{
+			$settings = self::$_gSettings[self::$_defaultCluster];
+
 			$endpoint = ltrim($endpoint, '/');
 
 			if(strpos($endpoint,'?') === false)
@@ -112,10 +115,18 @@ class Client
 			else
 				$endpoint = str_replace('?','?pretty=true&',$endpoint);
 
+			if($retryPoints ===null)
+				$retryPoints = $this->___accessPoints;
+
+			$randKey = array_rand($retryPoints);
+			$randAccessPoint = $retryPoints[$randKey];
+
 			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $this->___accessPoint.$endpoint);
+			curl_setopt($curl, CURLOPT_URL, $randAccessPoint.$endpoint);
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, @$settings['connectTimeout']?:5);
+			curl_setopt($curl, CURLOPT_TIMEOUT, @$settings['timeout']?:30);
 			if ($data)
 			{
 				if (!is_string($data)) $data = json_encode($data);
@@ -124,7 +135,31 @@ class Client
 				curl_setopt( $curl, CURLOPT_HTTPHEADER, array('Content-Type:'.$contentType));
 			}
 			$res = curl_exec($curl);
+			$err =curl_errno($curl);
+			$errMsg = curl_error($curl);
 			curl_close($curl);
+
+			if ($err)
+			{
+				//6 - CURLE_COULDNT_RESOLVE_HOST
+				//7 - CURLE_COULDNT_CONNECT
+				//28 - CURLE_OPERATION_TIMEDOUT
+
+				if(in_array($err,[6,7,28]) && $attempt<3)
+				{
+					if($attempt)
+						usleep($attempt*500);
+
+					if(count($retryPoints) > 1)
+					{
+						unset($retryPoints[$randKey]);
+						$retryPoints = array_values($retryPoints);
+					}
+					return $this->execute($endpoint, $method = 'GET', $data = null,  $contentType ='application/json',$attempt+1, $retryPoints);
+				}
+				else
+					throw new Exception("Curl Error: ".$err.'|'.$errMsg,500);
+			}
 
 			return $res;
 		}

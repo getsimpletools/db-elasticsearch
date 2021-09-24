@@ -124,6 +124,7 @@ class Client
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_URL, $randAccessPoint.$endpoint);
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+			curl_setopt($curl, CURLOPT_FRESH_CONNECT,true);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, @$settings['connectTimeout']?:5);
 			curl_setopt($curl, CURLOPT_TIMEOUT, @$settings['timeout']?:30);
@@ -137,15 +138,16 @@ class Client
 			$res = curl_exec($curl);
 			$err =curl_errno($curl);
 			$errMsg = curl_error($curl);
+			$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 			curl_close($curl);
 
-			if ($err)
+			if ($err || $httpcode == 503)
 			{
 				//6 - CURLE_COULDNT_RESOLVE_HOST
 				//7 - CURLE_COULDNT_CONNECT
 				//28 - CURLE_OPERATION_TIMEDOUT
 
-				if(in_array($err,[6,7,28]) && $attempt<3)
+				if($httpcode == 503 || in_array($err,[6,7,28]) && $attempt<3)
 				{
 					if($attempt)
 						usleep($attempt*500);

@@ -1,3 +1,7 @@
+### 0.1.10 (2021-09-24)
+1. **Simpletools\Db\Elasticsearch\Client**
+    1. Improved auto-reconnect
+
 ### 0.1.9 (2021-09-23)
 1. **Simpletools\Db\Elasticsearch\Client**
     1. Added multi hosts support

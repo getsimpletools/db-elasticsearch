@@ -157,7 +157,7 @@ class Client
 						unset($retryPoints[$randKey]);
 						$retryPoints = array_values($retryPoints);
 					}
-					return $this->execute($endpoint, $method = 'GET', $data = null,  $contentType ='application/json',$attempt+1, $retryPoints);
+					return $this->execute($endpoint, $method, $data,  $contentType,$attempt+1, $retryPoints);
 				}
 				else
 					throw new Exception("Curl Error: ".$err.'|'.$errMsg,500);

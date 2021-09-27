@@ -1,3 +1,7 @@
+### 0.1.12 (2021-09-27)
+1. **Simpletools\Db\Elasticsearch\Client**
+    1. Fix retries bug
+
 ### 0.1.11 (2021-09-25)
 1. **Simpletools\Db\Elasticsearch\Client**
     1. Fix retries bug

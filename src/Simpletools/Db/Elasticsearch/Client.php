@@ -147,7 +147,7 @@ class Client
 				//7 - CURLE_COULDNT_CONNECT
 				//28 - CURLE_OPERATION_TIMEDOUT
 
-				if($httpcode == 503 || in_array($err,[6,7,28]) && $attempt<3)
+				if(($httpcode == 503 || in_array($err,[6,7,28])) && $attempt<3)
 				{
 					if($attempt)
 						usleep($attempt*500);

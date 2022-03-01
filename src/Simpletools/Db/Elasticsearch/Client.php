@@ -126,6 +126,8 @@ class Client
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 			curl_setopt($curl, CURLOPT_FRESH_CONNECT,true);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, @$settings['connectTimeout']?:5);
 			curl_setopt($curl, CURLOPT_TIMEOUT, @$settings['timeout']?:30);
 			if ($data)

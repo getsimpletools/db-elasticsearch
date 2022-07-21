@@ -1,3 +1,7 @@
+### 0.1.14 (2022-07-21)
+1. **Simpletools\Db\Elasticsearch\Client**
+   1. Improved retries
+
 ### 0.1.13 (2022-03-01)
 1. **Simpletools\Db\Elasticsearch\Client**
     1. Disabled SSL host verification

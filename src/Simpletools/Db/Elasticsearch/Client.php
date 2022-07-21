@@ -148,8 +148,9 @@ class Client
 				//6 - CURLE_COULDNT_RESOLVE_HOST
 				//7 - CURLE_COULDNT_CONNECT
 				//28 - CURLE_OPERATION_TIMEDOUT
+        //52 - Empty reply from server
 
-				if(($httpcode == 503 || in_array($err,[6,7,28])) && $attempt<3)
+				if(($httpcode == 503 || in_array($err,[6,7,28,52])) && $attempt<3)
 				{
 					if($attempt)
 						usleep($attempt*500);

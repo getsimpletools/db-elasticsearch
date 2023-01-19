@@ -64,7 +64,7 @@ class SQL implements \JsonSerializable
 		return (string)$this->get();
 	}
 
-	public function jsonSerialize() {
+	public function jsonSerialize() : mixed {
 		return $this->_sqlQuery;
 	}
 }

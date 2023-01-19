@@ -1,3 +1,18 @@
+### 1.0.0 (2023-01-19)
+1. **Simpletools\Db\Elasticsearch\Doc\Body**
+  1. Added mixed return type to jsonSerialize() function
+2. **Simpletools\Db\Elasticsearch\DSL**
+  1. Added mixed return type to jsonSerialize() function
+3. **Simpletools\Db\Elasticsearch\SQL**
+  1. Added mixed return type to jsonSerialize() function
+4. **Simpletools\Db\Elasticsearch\Query**
+  1. Updated Iterator functions with return types
+    - current() : mixed
+    - next() : void
+    - key() : mixed
+    - rewind() : void
+    - valid() : bool
+
 ### 0.1.14 (2022-07-21)
 1. **Simpletools\Db\Elasticsearch\Client**
    1. Improved retries

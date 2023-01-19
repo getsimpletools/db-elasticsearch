@@ -1138,108 +1138,108 @@ class Query implements \Iterator
         return $this->_result->length();
     }
 
-    public function rewind()
+    public function rewind() : void
     {
         $this->run();
         $this->_result->rewind();
     }
 
-    public function current()
+    public function current() : mixed
     {
         return $this->_result->current();
     }
 
-    public function key()
+    public function key() : mixed
     {
         return $this->_result->key();
     }
 
-    public function next()
+    public function next() : void
     {
-        return $this->_result->next();
+        $this->_result->next();
     }
 
-    public function valid()
+    public function valid() : bool
     {
         return $this->_result->valid();
     }
 
-    public function getKeyspace()
-		{
-			return $this->_query['db'];
-		}
+	public function getKeyspace()
+	{
+		return $this->_query['db'];
+	}
 
-		public function getTable()
-		{
-			return $this->_query['table'];
-		}
+	public function getTable()
+	{
+		return $this->_query['table'];
+	}
 
-		public function getWhereArguments()
-		{
-			return $this->_query['where'];
-		}
+	public function getWhereArguments()
+	{
+		return $this->_query['where'];
+	}
 
-		public function resetResult()
-		{
-			$this->_result = null;
-			return $this;
-		}
+	public function resetResult()
+	{
+		$this->_result = null;
+		return $this;
+	}
 
-		public function nextPage()
-		{
-			$this->_result->nextPage();
-		}
+	public function nextPage()
+	{
+		$this->_result->nextPage();
+	}
 
     public function __toString()
     {
         return $this->getQuery();
     }
 
-		public function doc($id =null)
-		{
-			return (new Doc($id))->table($this->_query['index']);
-		}
+	public function doc($id =null)
+	{
+		return (new Doc($id))->table($this->_query['index']);
+	}
 
-		public function getCursorId()
-		{
-			return $this->_result->getCursorId();
-		}
+	public function getCursorId()
+	{
+		return $this->_result->getCursorId();
+	}
 
-		public function getScrollId()
-		{
-			return $this->_result->getScrollId();
-		}
+	public function getScrollId()
+	{
+		return $this->_result->getScrollId();
+	}
 
-        public function aggs()
-        {
-            return $this->_result->aggs();
-        }
+	public function aggs()
+	{
+	    return $this->_result->aggs();
+	}
 
-		public function getCurrentPage()
-		{
-			return $this->_result->getCurrentPage();
-		}
+	public function getCurrentPage()
+	{
+		return $this->_result->getCurrentPage();
+	}
 
-		public function getByCursorId($cursorId, $columns = [])
-		{
-			$this->_query['rawQuery'] = true;
-			$this->_query['type'] = "SQL";
-			$this->_query['data'] = [
-				'cursor' => $cursorId,
-				//"columnar" => true
-			];
-			$this->_query['method'] = 'POST';
-			$this->_query['endpoint'] = '/_sql?format=json';
-			$this->_query['cursorColumns'] = $columns;
-			
+	public function getByCursorId($cursorId, $columns = [])
+	{
+		$this->_query['rawQuery'] = true;
+		$this->_query['type'] = "SQL";
+		$this->_query['data'] = [
+			'cursor' => $cursorId,
+			//"columnar" => true
+		];
+		$this->_query['method'] = 'POST';
+		$this->_query['endpoint'] = '/_sql?format=json';
+		$this->_query['cursorColumns'] = $columns;
+		
 
-			return $this;
-		}
+		return $this;
+	}
 
-		public function getCursorColumns()
-		{
-			return $this->_result->getCursorColumns();
-		}
+	public function getCursorColumns()
+	{
+		return $this->_result->getCursorColumns();
+	}
 
 	public function getByScrollId($scrollId, $alive = '1m')
 	{

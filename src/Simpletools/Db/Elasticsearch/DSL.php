@@ -59,7 +59,7 @@ class DSL
 		}
 	}
 
-	public function jsonSerialize() {
+	public function jsonSerialize() : mixed {
 		return json_decode($this->_statement);
 	}
 

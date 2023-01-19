@@ -56,9 +56,9 @@ class Body implements \JsonSerializable
         }
     }
 
-		public function jsonSerialize() {
-			return $this->_object;
-		}
+	public function jsonSerialize() : mixed {
+		return $this->_object;
+	}
 
     public function __toString()
     {

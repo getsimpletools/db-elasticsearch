@@ -284,7 +284,7 @@ class Result implements \Iterator
         return isset($this->_firstRowCache->{$name});
     }
 
-    public function rewind()
+    public function rewind() : void
     {
         $this->_position 	= 0;
 
@@ -294,24 +294,24 @@ class Result implements \Iterator
         }
     }
 
-    public function current()
+    public function current() : mixed
     {
         return $this->_currentRow;
     }
 
-    public function key()
+    public function key() : mixed
     {
         return $this->_position;
     }
 
-    public function next()
+    public function next() : void
     {
         $this->_currentRow = $this->fetch();
         ++$this->position;
-        return $this->_currentRow;
+        // return $this->_currentRow;
     }
 
-    public function valid()
+    public function valid() : bool
     {
         return ($this->_currentRow) ? true : false;
     }

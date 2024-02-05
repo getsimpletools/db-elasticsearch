@@ -43,9 +43,9 @@ class Result implements \Iterator
     protected $_result 	= '';
     protected $_query = null;
     protected $_cursor = null;
-		protected $_scroll_id = null;
-		protected $_client = null;
-		protected $_autoScroll = false;
+	protected $_scroll_id = null;
+	protected $_client = null;
+	protected $_autoScroll = false;
 
     protected $_firstRowCache	= null;
     protected $_firstRowCached	= false;
@@ -54,10 +54,12 @@ class Result implements \Iterator
     protected $_currentRow 		= false;
     protected $_columnsMap      = array();
     protected $_schema = array();
-		protected $_convertMapToJson;
-		protected $_data = array();
-		protected $_cursorColumns  = [];
-		protected $_totalCount=0;
+	protected $_convertMapToJson;
+	protected $_data = array();
+	protected $_cursorColumns  = [];
+	protected $_totalCount=0;
+
+
 
     public function __construct($result, $query)
 		{
@@ -307,7 +309,7 @@ class Result implements \Iterator
     public function next() : void
     {
         $this->_currentRow = $this->fetch();
-        ++$this->position;
+        ++$this->_position;
         // return $this->_currentRow;
     }
 

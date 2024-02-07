@@ -1,4 +1,4 @@
-### 0.1.2 (2024-02-07)
+### 0.1.3 (2024-02-07)
 1. **Simpletools\Db\Elasticsearch\Client**
    1. Fixed single quotes escaping
 2.  **Simpletools\Db\Elasticsearch\Query**

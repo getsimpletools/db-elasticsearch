@@ -1,3 +1,9 @@
+### 0.1.2 (2024-02-07)
+1. **Simpletools\Db\Elasticsearch\Client**
+   1. Fixed single quotes escaping
+2.  **Simpletools\Db\Elasticsearch\Query**
+1. Fixed single quotes escaping
+
 ### 1.0.1 (2023-01-19)
 1. **Simpletools\Db\Elasticsearch\Doc\Body**
   1. Added mixed return type to jsonSerialize() function

@@ -169,15 +169,22 @@ class Client
 			return $res;
 		}
 
-    public function escape($string,$fromEncoding='UTF-8',$toEncoding='UTF-8')
+    public function escape($string,$fromEncoding='UTF-8',$toEncoding='UTF-8', $doubleQuote = false)
     {
         if($fromEncoding!='UTF-8' OR $toEncoding!='UTF-8')
         {
             $string = mb_convert_encoding ($string,$fromEncoding,$toEncoding);
         }
-
-        $search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
-        $replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
+        if($doubleQuote)
+        {
+          $search = array("\\",  "\x00", "\n",  "\r",  '"', "\x1a");
+          $replace = array("\\\\","\\0","\\n", "\\r",  '\"', "\\Z");
+        }
+        else
+        {
+          $search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
+          $replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
+        }
 
         return str_replace($search, $replace, $string);
     }

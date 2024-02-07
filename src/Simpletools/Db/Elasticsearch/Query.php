@@ -451,7 +451,7 @@ class Query implements \Iterator
         }
         else
         {
-        	if($doubleQuote) return '"'.$this->_client->escape($value).'"';
+        	if($doubleQuote) return '"'.$this->_client->escape($value, 'UTF-8','UTF-8', $doubleQuote).'"';
         	else return "'".$this->_client->escape($value)."'";
         }
     }

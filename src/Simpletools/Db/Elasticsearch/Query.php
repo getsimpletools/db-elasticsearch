@@ -16,7 +16,7 @@ class Query implements \Iterator
 
     protected $_result      = null;
 
-    public function __construct($index = null)
+    public function __construct(string|null $index = null)
     {
         $this->index($index);
 
@@ -257,7 +257,7 @@ class Query implements \Iterator
 			return $this;
 		}
 
-    public function callApi($endpoint, $method = 'GET', $data = null)
+    public function callApi($endpoint, $method = 'GET',string|array|null $data = null)
 		{
 			return $this->_client->execute($endpoint, $method, $data);
 		}
@@ -974,7 +974,7 @@ class Query implements \Iterator
 //    }
 
 
-    public function &select($columns =null)
+    public function &select(string|array|null $columns =null)
     {
         $this->_query['type']		= "SELECT";
         $this->_query['columns']	= $columns;
@@ -1195,7 +1195,7 @@ class Query implements \Iterator
         return $this->getQuery();
     }
 
-	public function doc($id =null)
+	public function doc(string|array|null $id =null)
 	{
 		return (new Doc($id))->table($this->_query['index']);
 	}

@@ -7,7 +7,7 @@ class Model extends Client
     protected static $____selfModel;
     protected $___cluster;
 
-    public function __construct($cluster=null)
+    public function __construct(string|null $cluster=null)
     {
         $this->___cluster 	= defined('static::CLUSTER') ? static::CLUSTER : $cluster;
 
@@ -39,7 +39,7 @@ class Model extends Client
         return $query;
     }
 
-		public function doc($id =null, $index = null)
+		public function doc(string|array|null $id =null,string|null $index = null)
 		{
 			return new Doc($id, $index);
 		}

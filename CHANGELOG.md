@@ -1,3 +1,22 @@
+### 1.0.4 (2025-01-14)
+1. **PHP 8.4 Compatibility. (Implicitly marking parameter as nullable is deprecated.)**
+    1. ***Simpletools\Db\Elasticsearch\Client***
+        1. Amended `__construct()` function to allow nullable string parameter `$cluster`
+        2. Amended `execute()` function to allow nullable string/array parameters `$data` and `$retryPoints`
+    2. ***Simpletools\Db\Elasticsearch\Doc***
+        1. Amended `__construct()` function to allow nullable string parameters `$id` and `$index`
+        2. Amended `getUpdateQuery()` function to allow nullable DSL parameter `$dsl`
+        3. Amended `update()` function to allow nullable DSL parameter `$dsl`
+        4. Amended `body()` function to allow nullable Body/array/string parameter `$body`
+    3. ***Simpletools\Db\Elasticsearch\Model***
+        1. Amended `__construct()` function to allow nullable string parameter `$cluster`
+        2. Amended `doc()` function to allow nullable string/array parameters `$id` and `$index`
+    4. ***Simpletools\Db\Elasticsearch\Query***
+        1. Amended `__construct()` function to allow nullable string parameter `$index`
+        2. Amended `callApi()` function to allow nullable string/array parameter `$data`
+        3. Amended `&select()` function to allow nullable string/array parameter `$columns`
+        4. Amended `doc()` function to allow nullable string/array parameter `$id`
+
 ### 1.0.3 (2024-02-07)
 1. **Simpletools\Db\Elasticsearch\Client**
    1. Fixed single quotes escaping

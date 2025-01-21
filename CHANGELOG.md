@@ -1,3 +1,8 @@
+### 1.0.5 (2025-01-21)
+1. **PHP 8.4 Compatibility. Passing null to parameter #2 ($flags) of type int is deprecated**
+    1. ***Simpletools\Db\Elasticsearch\Doc\Body***
+        1. Removed explicit `null` from being passed into `__toString()` function.
+
 ### 1.0.4 (2025-01-14)
 1. **PHP 8.4 Compatibility. (Implicitly marking parameter as nullable is deprecated.)**
     1. ***Simpletools\Db\Elasticsearch\Client***

@@ -63,12 +63,13 @@ class Body implements \JsonSerializable
     public function __toString()
     {
         if(is_string($this->_object)) return $this->_object;
-        else return $this->toJson(null);
+        else return $this->toJson();
     }
 
     public function toJson($options=JSON_PRETTY_PRINT)
     {
         return json_encode($this->_object,$options);
+
     }
 
 		public function toArray()

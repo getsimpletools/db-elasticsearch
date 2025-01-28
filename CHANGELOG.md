@@ -1,3 +1,6 @@
+### 1.0.6 (2025-01-28)
+1. **PHP 8.4 Compatibility. Amending nullable checks to `mixed` to prevent type casting of string/int values**
+
 ### 1.0.5 (2025-01-21)
 1. **PHP 8.4 Compatibility. Passing null to parameter #2 ($flags) of type int is deprecated**
     1. ***Simpletools\Db\Elasticsearch\Doc\Body***

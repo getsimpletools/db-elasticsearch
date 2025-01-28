@@ -52,7 +52,7 @@ class Doc
 	protected $_body;
 
 
-	public function __construct(string|null $id=null,string|null $index=null)
+	public function __construct(mixed $id=null,mixed $index=null)
 	{
 		if(!is_string($id) && $id!==null)
 			throw new \Exception('Id must be string or null (auto generate)');
@@ -127,7 +127,7 @@ class Doc
 		return $this;
 	}
 
-	public function getUpdateQuery(DSL|null $dsl = null)
+	public function getUpdateQuery(DSL|mixed $dsl = null)
 	{
 		if(!$this->_index)
 			throw new \Exception('Please specify index as an argument of ->$index()');
@@ -144,7 +144,7 @@ class Doc
 		return $this->_query;
 	}
 
-	public function update(DSL|null $dsl = null)
+	public function update(DSL|mixed $dsl = null)
 	{
 		$this->getUpdateQuery($dsl);
 		$this->_query->run();
@@ -205,7 +205,7 @@ class Doc
 	}
 
 
-	public function body(Body|array|string|null $body=null)
+	public function body(Body|mixed $body=null)
 	{
 		if($body===null)
 			return $this;

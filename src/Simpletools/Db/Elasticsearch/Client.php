@@ -14,7 +14,7 @@ class Client
     protected $___connection;
 
 
-    public function __construct(mixed $cluster=null)
+    public function __construct(string|null $cluster=null)
     {
         if($cluster)
             $this->___cluster = $cluster;
@@ -106,10 +106,10 @@ class Client
 
 		public function execute($endpoint, 
 			$method = 'GET',
-			mixed $data = null,
+			string|array|null $data = null,
 			$contentType ='application/json',
 			$attempt=0, 
-			mixed $retryPoints=null)
+			string|array|null $retryPoints=null)
 		{
 			$settings = self::$_gSettings[self::$_defaultCluster];
 

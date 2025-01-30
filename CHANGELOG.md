@@ -1,4 +1,4 @@
-### 1.0.6 (2025-01-28)
+### 1.0.8 (2025-01-30)
 1. **PHP 8.4 Compatibility. Amending nullable checks to `mixed` to prevent type casting of string/int values**
 
 ### 1.0.5 (2025-01-21)

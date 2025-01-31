@@ -148,9 +148,7 @@ class Result implements \Iterator
     			$this->_cursor = $this->_result->cursor;
 
             if(isset($this->_result->_scroll_id) && $this->_result->_scroll_id)
-                $scroll_id = $this->_result->_scroll_id;
-
-			$this->_scroll_id = $this->_data ? $scroll_id : null;
+    			$this->_scroll_id = $this->_data ? $this->_result->_scroll_id : null;
 
 			return $this;
 		}

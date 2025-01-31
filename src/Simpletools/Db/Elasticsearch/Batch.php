@@ -188,13 +188,13 @@ class Batch
 					'type' => "BULK"
 				]);
 
-				if($this->_throwError && @$this->_result->getRawResult()->errors)
+				if($this->_throwError && (isset($this->_result->getRawResult()->errors) && $this->_result->getRawResult()->errors))
 				{
 					$msg = 'Undefined bulk insert error, check raw result for more details';
 
 					foreach ($this->_result->getRawResult()->items as $index => $item)
 					{
-						if(@$item->index->error->reason)
+						if(isset($item->index->error->reason) && $item->index->error->reason)
 						{
 							$msg = 'Item Index: '.$index.' : '.$item->index->error->reason;
 							break;

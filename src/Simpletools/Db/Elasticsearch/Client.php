@@ -57,9 +57,9 @@ class Client
         $cluster                = (isset($settings['name']) ? $settings['name'] : $cluster);
         $default                = (isset($settings['default']) ? (bool) $settings['default'] : false);
 
-        $settings['host']       = isset($settings['host']) ? $settings['host'] : @$settings['hosts'];
+        $settings['host']       = $settings['host'] ?? ($settings['hosts'] ?? null);
         $settings['port']       = isset($settings['port']) ? (int) $settings['port'] : 9200;
-				$settings['protocol']   = isset($settings['protocol']) ? $settings['protocol'] : 'http://';
+				$settings['protocol']   = $settings['protocol'] ?? 'http://';
 
         if(!isset($settings['host']))
         {
@@ -89,17 +89,17 @@ class Client
 			return $this->execute($endpoint, 'GET');
 		}
 
-		public function put($endpoint, $data = null)
+		public function put($endpoint, mixed $data = null)
 		{
 			return $this->execute($endpoint, 'PUT', $data);
 		}
 
-		public function post($endpoint, $data = null)
+		public function post($endpoint, mixed $data = null)
 		{
 			return $this->execute($endpoint, 'POST', $data);
 		}
 
-		public function delete($endpoint, $data = null)
+		public function delete($endpoint, mixed $data = null)
 		{
 			return $this->execute($endpoint, 'DELETE', $data);
 		}
@@ -133,8 +133,8 @@ class Client
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, @$settings['connectTimeout']?:5);
-			curl_setopt($curl, CURLOPT_TIMEOUT, @$settings['timeout']?:30);
+			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $settings['connectTimeout']?:5);
+			curl_setopt($curl, CURLOPT_TIMEOUT, $settings['timeout']?:30);
 			if ($data)
 			{
 				if (!is_string($data)) $data = json_encode($data);

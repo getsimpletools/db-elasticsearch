@@ -1,3 +1,13 @@
+### 1.0.9 (2025-01-31)
+1. **PHP 8.4 Compatibility. Amending nullable checks to `mixed` to prevent type casting of string/int values**
+   1. ***Simpletools\Db\Elasticsearch\Client***
+      1. Added `mixed` type to `put()`, `post()` and `delete()` functions
+   2. ***Simpletools\Db\Elasticsearch\Result***
+   3. ***Simpletools\Db\Elasticsearch\Query***
+   4. ***Simpletools\Db\Elasticsearch\Doc***
+   5. ***Simpletools\Db\Elasticsearch\Batch***
+      1. Amended functions to replace `@$variable` checks with implicit `isset($variable)` checks. 
+
 ### 1.0.8 (2025-01-30)
 1. **PHP 8.4 Compatibility. Amending nullable checks to `mixed` to prevent type casting of string/int values**
 

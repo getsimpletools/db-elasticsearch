@@ -91,14 +91,14 @@ class Result implements \Iterator
 
 			if($this->_query['type'] == 'GET')
 			{
-				if(!@$this->_result->found)
+				if(!isset($this->_result->found) || !$this->_result->found)
 					throw new Exception('Document not found',404);
 
 				$this->_data[] = $this->_result->_source;
 			}
 			elseif($this->_query['type'] == 'SELECT' || $this->_query['type'] == 'SQL')
 			{
-				if(!$this->_cursorColumns && @$this->_result->columns)
+				if(!$this->_cursorColumns && (isset($this->_result->columns) && $this->_result->columns))
 				{
 					foreach ($this->_result->columns as  $col)
 					{
@@ -134,19 +134,23 @@ class Result implements \Iterator
 					throw new Exception('Unexpected search error',500);
 			}
 
-			if(@$this->_result->error)
+			if(isset($this->_result->error) && $this->_result->error)
 			{
 				if(is_string($this->_result->error))
 					throw new Exception($this->_result->error,$this->_result->status?:500);
-				elseif (@$this->_result->error->reason && is_string($this->_result->error->reason))
+				elseif ((isset($this->_result->error->reason) && $this->_result->error->reason) && is_string($this->_result->error->reason))
 					throw new Exception($this->_result->error->reason,$this->_result->status?:500);
 				else
 					throw new Exception('Unexpected Result Error',500);
 			}
 
+            if(isset($this->_result->cursor) && $this->_result->cursor)
+    			$this->_cursor = $this->_result->cursor;
 
-			$this->_cursor = @$this->_result->cursor;
-			$this->_scroll_id = $this->_data ? @$this->_result->_scroll_id : null;
+            if(isset($this->_result->_scroll_id) && $this->_result->_scroll_id)
+                $scroll_id = $this->_result->_scroll_id;
+
+			$this->_scroll_id = $this->_data ? $scroll_id : null;
 
 			return $this;
 		}
@@ -246,13 +250,20 @@ class Result implements \Iterator
     public function getAffectedRows()
     {
 			$this->parseResponse();
-			return @$this->_result->total;
+            if(isset($this->_result->total) && $this->_result->total)
+			    return $this->_result->total;
+            else
+                return null;
     }
 
     public function getInsertedId()
     {
 			$this->parseResponse();
-			return @$this->_result->_id;
+
+            if(isset($this->_result->_id) && $this->_result->_id)
+    			return $this->_result->_id;
+            else
+                return null;
     }
 
     protected function _loadFirstRowCache()

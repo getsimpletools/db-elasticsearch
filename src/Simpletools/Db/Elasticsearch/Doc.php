@@ -52,7 +52,7 @@ class Doc
 	protected $_body;
 
 
-	public function __construct(mixed $id=null,mixed $index=null)
+	public function __construct(mixed $id=null, mixed $index=null)
 	{
 		if(!is_string($id) && $id!==null)
 			throw new \Exception('Id must be string or null (auto generate)');

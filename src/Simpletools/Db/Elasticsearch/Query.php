@@ -340,7 +340,7 @@ class Query implements \Iterator
 		public function addAlias($index, $alias)
 		{
 			$this->_query['type'] = "ALIASES";
-			if(!@$this->_query['actions'])
+			if(!isset($this->_query['actions']) || !$this->_query['actions'])
 				$this->_query['actions'] = [];
 
 			$this->_query['actions'][] = [
@@ -355,7 +355,7 @@ class Query implements \Iterator
 		public function removeAlias($index, $alias)
 		{
 			$this->_query['type'] = "ALIASES";
-			if(!@$this->_query['actions'])
+			if(!isset($this->_query['actions']) || !$this->_query['actions'])
 				$this->_query['actions'] = [];
 
 			$this->_query['actions'][] = [
@@ -421,12 +421,12 @@ class Query implements \Iterator
 					]);
 				}
 
-        if(@$this->_query['cursorColumns'])
+        if(isset($this->_query['cursorColumns']) && $this->_query['cursorColumns'])
 				{
 					$this->_result->setCursorColumns($this->_query['cursorColumns']);
 				}
 
-				if(@$this->_query['autoScroll'])
+				if(isset($this->_query['autoScroll']) && $this->_query['autoScroll'])
 				{
 					$this->_result->autoScroll();
 				}
@@ -514,7 +514,7 @@ class Query implements \Iterator
     {
         $args = [];
 
-        if(@$this->_query['rawQuery'])
+        if(isset($this->_query['rawQuery']) && $this->_query['rawQuery'])
 				{
 					return [
 						'endpoint' => $this->_query['endpoint'],
@@ -744,10 +744,10 @@ class Query implements \Iterator
 						if(!isset($operands[2]))
 						{
 							if($operands[1]===null) {
-								$query[] = @$operands[-1] . ' ' . $this->escapeKey($operands[0]) . " IS NULL";
+								$query[] = ($operands[-1] ?? '') . ' ' . $this->escapeKey($operands[0]) . " IS NULL";
 							}
 							else{
-								$query[] = @$operands[-1] . ' ' . $this->escapeKey($operands[0]) . " = " . $this->_escape($operands[1]);
+								$query[] = ($operands[-1] ?? '') . ' ' . $this->escapeKey($operands[0]) . " = " . $this->_escape($operands[1]);
 							}
 
 						}
@@ -764,16 +764,16 @@ class Query implements \Iterator
 									$operands_[] = $this->_escape($op);
 								}
 
-								$query[] = @$operands[-1].' '.$this->escapeKey($operands[0])." ".$operands[1]." (".implode(",",$operands_).')';
+								$query[] = ($operands[-1] ?? '').' '.$this->escapeKey($operands[0])." ".$operands[1]." (".implode(",",$operands_).')';
 							}
 							else
 							{
 								if($operands[2]===null) {
-									$query[] = @$operands[-1] . ' ' . $this->escapeKey($operands[0]) . " " . $operands[1] . " NULL";
+									$query[] = ($operands[-1] ?? '') . ' ' . $this->escapeKey($operands[0]) . " " . $operands[1] . " NULL";
 								}
 								else
 								{
-									$query[] = @$operands[-1] . ' ' . $this->escapeKey($operands[0]) . " " . $operands[1] . " " . $this->_escape($operands[2]);
+									$query[] = ($operands[-1] ?? '') . ' ' . $this->escapeKey($operands[0]) . " " . $operands[1] . " " . $this->_escape($operands[2]);
 								}
 
 							}

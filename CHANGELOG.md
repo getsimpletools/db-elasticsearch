@@ -1,3 +1,6 @@
+### 1.0.10 (2025-01-31)
+1. **Merged `db-elasticsearch-php7` into master
+
 ### 1.0.9 (2025-01-31)
 1. **PHP 8.4 Compatibility. Amending nullable checks to `mixed` to prevent type casting of string/int values**
    1. ***Simpletools\Db\Elasticsearch\Client***

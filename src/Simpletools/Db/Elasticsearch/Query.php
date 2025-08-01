@@ -421,12 +421,12 @@ class Query implements \Iterator
 					]);
 				}
 
-        if(@$this->_query['cursorColumns'])
+                if(isset($this->_query['cursorColumns']) && is_array($this->_query['cursorColumns']))
 				{
 					$this->_result->setCursorColumns($this->_query['cursorColumns']);
 				}
 
-				if(@$this->_query['autoScroll'])
+				if(isset($this->_query['autoScroll']) && $this->_query['autoScroll'])
 				{
 					$this->_result->autoScroll();
 				}

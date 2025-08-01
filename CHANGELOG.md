@@ -1,3 +1,7 @@
+### 0.1.16 (2024-02-07)
+1. **Simpletools\Db\Elasticsearch\Query**
+   1. Added `isset()` check for AutoScroll
+
 ### 0.1.15 (2024-02-07)
 1. **Simpletools\Db\Elasticsearch\Client**
    1. Fixed single quotes escaping

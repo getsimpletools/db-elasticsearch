@@ -1,4 +1,4 @@
-### 0.1.16 (2024-02-07)
+### 0.1.16 (2025-08-01)
 1. **Simpletools\Db\Elasticsearch\Query**
    1. Added `isset()` check for AutoScroll
 
